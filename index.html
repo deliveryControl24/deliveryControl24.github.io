@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Registro y Facturación de Delivery</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #333; color: #fff; margin: 0; padding: 10px; }
+        h1, h2 { color: #fff; text-align: center; }
+        form, table, #orderTableContainer {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            background-color: #444;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #555; text-align: left; }
+        .total { font-weight: bold; }
+        label { color: #fff; }
+        input, select, textarea, button { 
+            color: #000; background-color: #fff; border: 1px solid #ccc; padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box;
+        }
+        button { background-color: #555; color: #fff; border: none; cursor: pointer; }
+        button:hover { background-color: #666; }
+        .voucher {
+            background-color: #fff;
+            color: #000;
+            width: 300px; padding: 20px; border: 1px solid #000; border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); margin: auto;
+        }
+        .voucher h2 { text-align: center; }
+        .voucher .total { font-size: 1.2em; }
+        @media (max-width: 768px) { th, td { padding: 8px; font-size: 0.9rem; } }
+        @media (max-width: 480px) { th, td { font-size: 0.8rem; } }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<h1>Sistema de Registro y Facturación de Deliveries</h1>
+<h2 id="currentDay"></h2>
+
+<form id="orderForm">
+    <h2>Registrar Nuevo Pedido</h2>
+    <label>Retiro: <input type="text" id="pickup" required></label>
+    <label>¿Dónde entrego?: <input type="text" id="deliveryAddress" required></label>
+    <label>¿Quién recibo?: <input type="text" id="recipient" required></label>
+    <label>Número de Cliente: <input type="text" id="customerNumber" required></label>
+    <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label>
+    <button type="submit">Añadir Pedido</button>
+</form>
+
+<h2>Seleccionar Pedido para Guardar</h2>
+<label for="orderSelect">Selecciona el Pedido:</label>
+<select id="orderSelect"></select>
+<label for="fileFormat">Seleccionar Formato:</label>
+<select id="fileFormat">
+    <option value="pdf">PDF</option>
+    <option value="jpg">JPG</option>
+</select>
+<button onclick="exportSelectedOrderAsVoucher()">Guardar Pedido</button>
+<button onclick="sendOrderToWhatsApp()">Enviar Pedido a WhatsApp</button>
+
+<h2>Ganancia del Día</h2>
+<button onclick="downloadDailyEarnings()">Descargar Ganancia del Día</button>
+
+<div id="orderTableContainer">
+    <table>
+        <thead>
+            <tr>
+                <th>Retiro</th>
+                <th>¿Dónde entrego?</th>
+                <th>¿Quién recibo?</th>
+                <th>Número de Cliente</th>
+                <th>Efectivo (C$)</th>
+            </tr>
+        </thead>
+        <tbody id="orderTable"></tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" class="total">Total Diario de Pedidos</td>
+                <td id="dailyTotal">0</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    const orders = [];
+    const earnings = [];
+
+    // Mostrar el día de la semana
+    document.getElementById('currentDay').textContent = `Día: ${new Date().toLocaleString('es-ES', { weekday: 'long' })}`;
+
+    document.getElementById('orderForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const order = {
+            pickup: this.pickup.value,
+            deliveryAddress: this.deliveryAddress.value,
+            recipient: this.recipient.value,
+            customerNumber: this.customerNumber.value,
+            cash: parseFloat(this.cash.value),
+        };
+        orders.push(order);
+        earnings.push(order.cash); // Guardamos el efectivo como ganancia
+        this.reset();
+        renderOrders();
+        updateOrderSelect();
+    });
+
+    function renderOrders() {
+        const tableBody = document.getElementById('orderTable');
+        tableBody.innerHTML = '';
+        let dailyTotal = 0;
+
+        orders.forEach((order, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${order.pickup}</td>
+                <td>${order.deliveryAddress}</td>
+                <td>${order.recipient}</td>
+                <td>${order.customerNumber}</td>
+                <td>${order.cash} C$</td>
+            `;
+            tableBody.appendChild(row);
+            dailyTotal += order.cash; // Sumar el efectivo total
+        });
+
+        document.getElementById('dailyTotal').textContent = dailyTotal + ' C$';
+    }
+
+    function updateOrderSelect() {
+        const orderSelect = document.getElementById('orderSelect');
+        orderSelect.innerHTML = '';
+        orders.forEach((order, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `Pedido ${index + 1}`;
+            orderSelect.appendChild(option);
+        });
+    }
+
+    async function exportSelectedOrderAsVoucher() {
+        const selectedOrderIndex = document.getElementById('orderSelect').value;
+        const order = orders[selectedOrderIndex];
+        const voucherContainer = document.createElement('div');
+        voucherContainer.className = 'voucher';
+        voucherContainer.innerHTML = `
+            <h2>Voucher de Pedido</h2>
+            <p><strong>Retiro:</strong> ${order.pickup}</p>
+            <p><strong>¿Dónde entrego?:</strong> ${order.deliveryAddress}</p>
+            <p><strong>¿Quién recibo?:</strong> ${order.recipient}</p>
+            <p><strong>Número de Cliente:</strong> ${order.customerNumber}</p>
+            <p><strong>Efectivo:</strong> ${order.cash} C$</p>
+        `;
+        
+        document.body.appendChild(voucherContainer);
+        const canvas = await html2canvas(voucherContainer);
+        const imgData = canvas.toDataURL("image/png");
+        document.body.removeChild(voucherContainer);
+
+        const fileFormat = document.getElementById('fileFormat').value;
+        if (fileFormat === 'pdf') {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+            pdf.save(`voucher_pedido_${parseInt(selectedOrderIndex) + 1}.pdf`);
+        } else {
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `voucher_pedido_${parseInt(selectedOrderIndex) + 1}.jpg`;
+            link.click();
+        }
+    }
+
+    function sendOrderToWhatsApp() {
+        const selectedOrderIndex = document.getElementById('orderSelect').value;
+        const order = orders[selectedOrderIndex];
+
+        const message = `Nuevo Pedido:\n` +
+                        `Retiro: ${order.pickup}\n` +
+                        `¿Dónde entrego?: ${order.deliveryAddress}\n` +
+                        `¿Quién recibo?: ${order.recipient}\n` +
+                        `Número de Cliente: ${order.customerNumber}\n` +
+                        `Efectivo: ${order.cash} C$`;
+
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+
+    function downloadDailyEarnings() {
+        const dailyTotal = orders.reduce((total, order) => total + order.cash, 0);
+        const earningsText = `Ganancia del día (${new Date().toLocaleString('es-ES', { weekday: 'long' })}): ${dailyTotal} C$`;
+        const blob = new Blob([earningsText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `ganancia_del_dia_${new Date().toISOString().split('T')[0]}.txt`;
+        link.click();
+    }
+</script>
+
+</body>
+</html>

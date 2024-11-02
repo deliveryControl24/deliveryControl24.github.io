@@ -57,8 +57,17 @@
     <label>Producto a Entregar: <input type="text" id="recipient" required></label>
     <label>Número de Cliente: <input type="text" id="customerNumber" required></label>
     <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label>
-    <label>Tarifa (C$): <input type="number" id="fee" min="0" required></label> <!-- Campo de tarifa agregado -->
+    <label>Nombre de Motorizado: <input type="text" id="motorizedName" required></label> <!-- Cambiado de Tarifa a Nombre de Motorizado -->
     <button type="submit">Añadir Pedido</button>
+    
+    <div>
+        <button type="button" onclick="toggleDeleteConfirmation()">Limpiar/Borrar</button> <!-- Cambiado a Limpiar/Borrar -->
+        <div id="deleteConfirmation" style="display:none;">
+            <p>¿Está seguro de que desea eliminar todos los pedidos?</p>
+            <button onclick="clearEarnings()">Sí</button>
+            <button onclick="toggleDeleteConfirmation()">No</button>
+        </div>
+    </div>
 </form>
 
 <h2>Seleccionar Pedido para Guardar</h2>
@@ -76,10 +85,6 @@
 <button onclick="downloadDailyEarnings()">Descargar Ganancia del Día</button>
 <button onclick="calculateTotalEarnings()">Suma de Ganancias del Día</button>
 <div id="totalEarningsDisplay">Total Ganancias: 0 C$</div>
-<button onclick="calculateTotalFees()">Suma de Tarifas</button> <!-- Botón para calcular tarifas -->
-<div id="totalFeesDisplay">Total Tarifas: 0 C$</div> <!-- Display de tarifas -->
-<button onclick="downloadTotalFees()">Descargar Tarifas</button> <!-- Botón para descargar tarifas -->
-<button onclick="clearEarnings()">Limpiar Ganancias</button>
 
 <div id="orderTableContainer">
     <table>
@@ -90,7 +95,7 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
-                <th>Tarifa (C$)</th> <!-- Columna de tarifa añadida -->
+                <th>Nombre de Motorizado</th> <!-- Cambiado de Tarifa a Nombre de Motorizado -->
             </tr>
         </thead>
         <tbody id="orderTable"></tbody>
@@ -98,7 +103,7 @@
             <tr>
                 <td colspan="4" class="total">Total Diario de Pedidos</td>
                 <td id="dailyTotal">0</td>
-                <td></td> <!-- Espacio para la tarifa en el pie de la tabla -->
+                <td></td> <!-- Espacio para el nombre del motorizado en el pie de la tabla -->
             </tr>
         </tfoot>
     </table>
@@ -114,7 +119,7 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
-                <th>Tarifa (C$)</th> <!-- Columna de tarifa añadida -->
+                <th>Nombre de Motorizado</th> <!-- Cambiado de Tarifa a Nombre de Motorizado -->
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -136,7 +141,7 @@
             recipient: this.recipient.value,
             customerNumber: this.customerNumber.value,
             cash: parseFloat(this.cash.value),
-            fee: parseFloat(this.fee.value), // Captura la tarifa
+            motorizedName: this.motorizedName.value, // Captura el nombre del motorizado
         };
         orders.push(order);
         localStorage.setItem('orders', JSON.stringify(orders)); // Guardar en almacenamiento local
@@ -159,7 +164,7 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
-                <td>${order.fee} C$</td> <!-- Mostrar la tarifa -->
+                <td>${order.motorizedName}</td> <!-- Mostrar el nombre del motorizado -->
             `;
             tableBody.appendChild(row);
             dailyTotal += order.cash; // Sumar el efectivo total
@@ -180,7 +185,7 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
-                <td>${order.fee} C$</td> <!-- Mostrar la tarifa -->
+                <td>${order.motorizedName}</td> <!-- Mostrar el nombre del motorizado -->
                 <td><button onclick="deleteOrder(${index})">Eliminar</button></td>
             `;
             historyTableBody.appendChild(row);
@@ -219,7 +224,7 @@
             <p><strong>Producto a Entregar:</strong> ${order.recipient}</p>
             <p><strong>Número de Cliente:</strong> ${order.customerNumber}</p>
             <p><strong>Efectivo:</strong> ${order.cash} C$</p>
-            <p><strong>Tarifa:</strong> ${order.fee} C$</p> <!-- Mostrar tarifa en el voucher -->
+            <p><strong>Nombre de Motorizado:</strong> ${order.motorizedName}</p> <!-- Mostrar nombre del motorizado en el voucher -->
         `;
         
         document.body.appendChild(voucherContainer);
@@ -251,7 +256,7 @@
                         `Producto a Entregar: ${order.recipient}\n` +
                         `Número de Cliente: ${order.customerNumber}\n` +
                         `Efectivo: ${order.cash} C$\n` +
-                        `Tarifa: ${order.fee} C$`; // Agregar tarifa en el mensaje
+                        `Nombre de Motorizado: ${order.motorizedName}`; // Agregar nombre del motorizado en el mensaje
 
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
@@ -272,30 +277,19 @@
         document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: ${totalEarnings} C$`;
     }
 
-    function calculateTotalFees() {
-        const totalFees = orders.reduce((total, order) => total + order.fee, 0);
-        document.getElementById('totalFeesDisplay').textContent = `Total Tarifas: ${totalFees} C$`; // Mostrar total de tarifas
-    }
-
-    function downloadTotalFees() {
-        const totalFees = orders.reduce((total, order) => total + order.fee, 0);
-        const feesText = `Total Tarifas (${new Date().toLocaleString('es-ES', { weekday: 'long' })}): ${totalFees} C$`;
-        const blob = new Blob([feesText], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `tarifas_del_dia_${new Date().toISOString().split('T')[0]}.txt`;
-        link.click();
+    function toggleDeleteConfirmation() {
+        const confirmationDiv = document.getElementById('deleteConfirmation');
+        confirmationDiv.style.display = confirmationDiv.style.display === 'none' ? 'block' : 'none';
     }
 
     function clearEarnings() {
-        if (confirm("¿Estás seguro de que deseas limpiar todas las ganancias?")) {
+        if (confirm("¿Está seguro de que desea eliminar todos los pedidos?")) {
             localStorage.removeItem('orders'); // Limpiar el almacenamiento local
             orders.length = 0; // Vaciar el arreglo de pedidos
             renderOrders(); // Volver a renderizar la tabla de pedidos
             renderHistory(); // Volver a renderizar el historial
             updateOrderSelect(); // Actualizar el selector de pedidos
             document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: 0 C$`; // Resetear el total
-            document.getElementById('totalFeesDisplay').textContent = `Total Tarifas: 0 C$`; // Resetear el total de tarifas
         }
     }
 

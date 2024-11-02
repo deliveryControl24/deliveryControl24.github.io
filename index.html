@@ -86,6 +86,20 @@
 <button onclick="calculateTotalEarnings()">Suma de Ganancias del Día</button>
 <div id="totalEarningsDisplay">Total Ganancias: 0 C$</div>
 
+<h2>Conteo de Pedidos por Motorizado</h2>
+<div id="motorizedCountContainer">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre de Motorizado</th>
+                <th>Conteo de Pedidos</th>
+            </tr>
+        </thead>
+        <tbody id="motorizedCountTable"></tbody>
+    </table>
+    <button onclick="downloadMotorizedCount()">Descargar Conteo de Motorizados</button> <!-- Botón para descargar conteo -->
+</div>
+
 <div id="orderTableContainer">
     <table>
         <thead>
@@ -149,6 +163,7 @@
         renderOrders();
         renderHistory();
         updateOrderSelect();
+        updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
     });
 
     function renderOrders() {
@@ -192,6 +207,26 @@
         });
     }
 
+    function updateMotorizedCount() {
+        const motorizedCount = {};
+        orders.forEach(order => {
+            if (motorizedCount[order.motorizedName]) {
+                motorizedCount[order.motorizedName]++;
+            } else {
+                motorizedCount[order.motorizedName] = 1;
+            }
+        });
+
+        const motorizedCountTableBody = document.getElementById('motorizedCountTable');
+        motorizedCountTableBody.innerHTML = ''; // Limpiar tabla de conteo
+
+        for (const [name, count] of Object.entries(motorizedCount)) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${name}</td><td>${count}</td>`;
+            motorizedCountTableBody.appendChild(row);
+        }
+    }
+
     function deleteOrder(index) {
         // Eliminar el pedido del arreglo
         orders.splice(index, 1);
@@ -199,6 +234,7 @@
         renderOrders(); // Volver a renderizar la tabla de pedidos
         renderHistory(); // Volver a renderizar el historial
         updateOrderSelect(); // Actualizar el selector de pedidos
+        updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
     }
 
     function updateOrderSelect() {
@@ -290,11 +326,36 @@
             renderHistory(); // Volver a renderizar el historial
             updateOrderSelect(); // Actualizar el selector de pedidos
             document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: 0 C$`; // Resetear el total
+            updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
         }
+    }
+
+    function downloadMotorizedCount() {
+        const motorizedCount = {};
+        orders.forEach(order => {
+            if (motorizedCount[order.motorizedName]) {
+                motorizedCount[order.motorizedName]++;
+            } else {
+                motorizedCount[order.motorizedName] = 1;
+            }
+        });
+
+        // Crear contenido para la descarga
+        let countText = "Nombre de Motorizado,Conteo de Pedidos\n";
+        for (const [name, count] of Object.entries(motorizedCount)) {
+            countText += `${name},${count}\n`;
+        }
+
+        const blob = new Blob([countText], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `conteo_pedidos_motorizados_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
     }
 
     renderOrders(); // Cargar pedidos al inicio
     renderHistory(); // Cargar historial al inicio
+    updateMotorizedCount(); // Iniciar conteo de motorizados al cargar
 </script>
 
 </body>

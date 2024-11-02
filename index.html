@@ -76,6 +76,9 @@
 <button onclick="downloadDailyEarnings()">Descargar Ganancia del Día</button>
 <button onclick="calculateTotalEarnings()">Suma de Ganancias del Día</button>
 <div id="totalEarningsDisplay">Total Ganancias: 0 C$</div>
+<button onclick="calculateTotalFees()">Suma de Tarifas</button> <!-- Botón para calcular tarifas -->
+<div id="totalFeesDisplay">Total Tarifas: 0 C$</div> <!-- Display de tarifas -->
+<button onclick="downloadTotalFees()">Descargar Tarifas</button> <!-- Botón para descargar tarifas -->
 <button onclick="clearEarnings()">Limpiar Ganancias</button>
 
 <div id="orderTableContainer">
@@ -269,6 +272,21 @@
         document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: ${totalEarnings} C$`;
     }
 
+    function calculateTotalFees() {
+        const totalFees = orders.reduce((total, order) => total + order.fee, 0);
+        document.getElementById('totalFeesDisplay').textContent = `Total Tarifas: ${totalFees} C$`; // Mostrar total de tarifas
+    }
+
+    function downloadTotalFees() {
+        const totalFees = orders.reduce((total, order) => total + order.fee, 0);
+        const feesText = `Total Tarifas (${new Date().toLocaleString('es-ES', { weekday: 'long' })}): ${totalFees} C$`;
+        const blob = new Blob([feesText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `tarifas_del_dia_${new Date().toISOString().split('T')[0]}.txt`;
+        link.click();
+    }
+
     function clearEarnings() {
         if (confirm("¿Estás seguro de que deseas limpiar todas las ganancias?")) {
             localStorage.removeItem('orders'); // Limpiar el almacenamiento local
@@ -277,6 +295,7 @@
             renderHistory(); // Volver a renderizar el historial
             updateOrderSelect(); // Actualizar el selector de pedidos
             document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: 0 C$`; // Resetear el total
+            document.getElementById('totalFeesDisplay').textContent = `Total Tarifas: 0 C$`; // Resetear el total de tarifas
         }
     }
 

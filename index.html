@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Registro y Facturación de Delivery</title>
+    <title>Sistema de Registro y Facturación de Pedidos</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -47,14 +47,14 @@
 </head>
 <body>
 
-<h1>Sistema de Registro y Facturación de Deliveries</h1>
+<h1>Sistema de Registro y Facturación de Pedidos</h1> <!-- Título actualizado -->
 <h2 id="currentDay"></h2>
 
 <form id="orderForm">
     <h2>Registrar Nuevo Pedido</h2>
     <label>Retiro: <input type="text" id="pickup" required></label>
-    <label>Lugar de Entrega: <input type="text" id="deliveryAddress" required></label> <!-- Modificado -->
-    <label>Producto a Entregar: <input type="text" id="recipient" required></label> <!-- Modificado -->
+    <label>Lugar de Entrega: <input type="text" id="deliveryAddress" required></label>
+    <label>Producto a Entregar: <input type="text" id="recipient" required></label>
     <label>Número de Cliente: <input type="text" id="customerNumber" required></label>
     <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label>
     <button type="submit">Añadir Pedido</button>
@@ -73,14 +73,17 @@
 
 <h2>Ganancia del Día</h2>
 <button onclick="downloadDailyEarnings()">Descargar Ganancia del Día</button>
+<button onclick="calculateTotalEarnings()">Suma de Ganancias del Día</button>
+<div id="totalEarningsDisplay">Total Ganancias: 0 C$</div>
+<button onclick="clearEarnings()">Limpiar Ganancias</button>
 
 <div id="orderTableContainer">
     <table>
         <thead>
             <tr>
                 <th>Retiro</th>
-                <th>Lugar de Entrega</th> <!-- Modificado -->
-                <th>Producto a Entregar</th> <!-- Modificado -->
+                <th>Lugar de Entrega</th>
+                <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
             </tr>
@@ -101,11 +104,11 @@
         <thead>
             <tr>
                 <th>Retiro</th>
-                <th>Lugar de Entrega</th> <!-- Modificado -->
-                <th>Producto a Entregar</th> <!-- Modificado -->
+                <th>Lugar de Entrega</th>
+                <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
-                <th>Acciones</th> <!-- Nueva columna para acciones -->
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody id="historyTable"></tbody>
@@ -168,7 +171,7 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
-                <td><button onclick="deleteOrder(${index})">Eliminar</button></td> <!-- Botón eliminar -->
+                <td><button onclick="deleteOrder(${index})">Eliminar</button></td>
             `;
             historyTableBody.appendChild(row);
         });
@@ -202,8 +205,8 @@
         voucherContainer.innerHTML = `
             <h2>Voucher de Pedido</h2>
             <p><strong>Retiro:</strong> ${order.pickup}</p>
-            <p><strong>Lugar de Entrega:</strong> ${order.deliveryAddress}</p> <!-- Modificado -->
-            <p><strong>Producto a Entregar:</strong> ${order.recipient}</p> <!-- Modificado -->
+            <p><strong>Lugar de Entrega:</strong> ${order.deliveryAddress}</p>
+            <p><strong>Producto a Entregar:</strong> ${order.recipient}</p>
             <p><strong>Número de Cliente:</strong> ${order.customerNumber}</p>
             <p><strong>Efectivo:</strong> ${order.cash} C$</p>
         `;
@@ -233,8 +236,8 @@
 
         const message = `Nuevo Pedido:\n` +
                         `Retiro: ${order.pickup}\n` +
-                        `Lugar de Entrega: ${order.deliveryAddress}\n` + <!-- Modificado -->
-                        `Producto a Entregar: ${order.recipient}\n` + <!-- Modificado -->
+                        `Lugar de Entrega: ${order.deliveryAddress}\n` +
+                        `Producto a Entregar: ${order.recipient}\n` +
                         `Número de Cliente: ${order.customerNumber}\n` +
                         `Efectivo: ${order.cash} C$`;
 
@@ -250,6 +253,22 @@
         link.href = URL.createObjectURL(blob);
         link.download = `ganancia_del_dia_${new Date().toISOString().split('T')[0]}.txt`;
         link.click();
+    }
+
+    function calculateTotalEarnings() {
+        const totalEarnings = orders.reduce((total, order) => total + order.cash, 0);
+        document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: ${totalEarnings} C$`;
+    }
+
+    function clearEarnings() {
+        if (confirm("¿Estás seguro de que deseas limpiar todas las ganancias?")) {
+            localStorage.removeItem('orders'); // Limpiar el almacenamiento local
+            orders.length = 0; // Vaciar el arreglo de pedidos
+            renderOrders(); // Volver a renderizar la tabla de pedidos
+            renderHistory(); // Volver a renderizar el historial
+            updateOrderSelect(); // Actualizar el selector de pedidos
+            document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: 0 C$`; // Resetear el total
+        }
     }
 
     renderOrders(); // Cargar pedidos al inicio

@@ -47,7 +47,7 @@
 </head>
 <body>
 
-<h1>Sistema de Registro y Facturación de Pedidos</h1> <!-- Título actualizado -->
+<h1>Sistema de Registro y Facturación de Pedidos</h1>
 <h2 id="currentDay"></h2>
 
 <form id="orderForm">
@@ -57,6 +57,7 @@
     <label>Producto a Entregar: <input type="text" id="recipient" required></label>
     <label>Número de Cliente: <input type="text" id="customerNumber" required></label>
     <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label>
+    <label>Tarifa (C$): <input type="number" id="fee" min="0" required></label> <!-- Campo de tarifa agregado -->
     <button type="submit">Añadir Pedido</button>
 </form>
 
@@ -86,6 +87,7 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
+                <th>Tarifa (C$)</th> <!-- Columna de tarifa añadida -->
             </tr>
         </thead>
         <tbody id="orderTable"></tbody>
@@ -93,6 +95,7 @@
             <tr>
                 <td colspan="4" class="total">Total Diario de Pedidos</td>
                 <td id="dailyTotal">0</td>
+                <td></td> <!-- Espacio para la tarifa en el pie de la tabla -->
             </tr>
         </tfoot>
     </table>
@@ -108,6 +111,7 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
+                <th>Tarifa (C$)</th> <!-- Columna de tarifa añadida -->
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -129,6 +133,7 @@
             recipient: this.recipient.value,
             customerNumber: this.customerNumber.value,
             cash: parseFloat(this.cash.value),
+            fee: parseFloat(this.fee.value), // Captura la tarifa
         };
         orders.push(order);
         localStorage.setItem('orders', JSON.stringify(orders)); // Guardar en almacenamiento local
@@ -151,6 +156,7 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
+                <td>${order.fee} C$</td> <!-- Mostrar la tarifa -->
             `;
             tableBody.appendChild(row);
             dailyTotal += order.cash; // Sumar el efectivo total
@@ -171,6 +177,7 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
+                <td>${order.fee} C$</td> <!-- Mostrar la tarifa -->
                 <td><button onclick="deleteOrder(${index})">Eliminar</button></td>
             `;
             historyTableBody.appendChild(row);
@@ -209,6 +216,7 @@
             <p><strong>Producto a Entregar:</strong> ${order.recipient}</p>
             <p><strong>Número de Cliente:</strong> ${order.customerNumber}</p>
             <p><strong>Efectivo:</strong> ${order.cash} C$</p>
+            <p><strong>Tarifa:</strong> ${order.fee} C$</p> <!-- Mostrar tarifa en el voucher -->
         `;
         
         document.body.appendChild(voucherContainer);
@@ -239,7 +247,8 @@
                         `Lugar de Entrega: ${order.deliveryAddress}\n` +
                         `Producto a Entregar: ${order.recipient}\n` +
                         `Número de Cliente: ${order.customerNumber}\n` +
-                        `Efectivo: ${order.cash} C$`;
+                        `Efectivo: ${order.cash} C$\n` +
+                        `Tarifa: ${order.fee} C$`; // Agregar tarifa en el mensaje
 
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');

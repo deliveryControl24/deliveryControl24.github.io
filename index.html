@@ -53,8 +53,8 @@
 <form id="orderForm">
     <h2>Registrar Nuevo Pedido</h2>
     <label>Retiro: <input type="text" id="pickup" required></label>
-    <label>¿Dónde entrego?: <input type="text" id="deliveryAddress" required></label>
-    <label>¿Quién recibo?: <input type="text" id="recipient" required></label>
+    <label>Lugar de Entrega: <input type="text" id="deliveryAddress" required></label> <!-- Modificado -->
+    <label>Producto a Entregar: <input type="text" id="recipient" required></label> <!-- Modificado -->
     <label>Número de Cliente: <input type="text" id="customerNumber" required></label>
     <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label>
     <button type="submit">Añadir Pedido</button>
@@ -79,8 +79,8 @@
         <thead>
             <tr>
                 <th>Retiro</th>
-                <th>¿Dónde entrego?</th>
-                <th>¿Quién recibo?</th>
+                <th>Lugar de Entrega</th> <!-- Modificado -->
+                <th>Producto a Entregar</th> <!-- Modificado -->
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
             </tr>
@@ -101,8 +101,8 @@
         <thead>
             <tr>
                 <th>Retiro</th>
-                <th>¿Dónde entrego?</th>
-                <th>¿Quién recibo?</th>
+                <th>Lugar de Entrega</th> <!-- Modificado -->
+                <th>Producto a Entregar</th> <!-- Modificado -->
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
                 <th>Acciones</th> <!-- Nueva columna para acciones -->
@@ -202,8 +202,8 @@
         voucherContainer.innerHTML = `
             <h2>Voucher de Pedido</h2>
             <p><strong>Retiro:</strong> ${order.pickup}</p>
-            <p><strong>¿Dónde entrego?:</strong> ${order.deliveryAddress}</p>
-            <p><strong>¿Quién recibo?:</strong> ${order.recipient}</p>
+            <p><strong>Lugar de Entrega:</strong> ${order.deliveryAddress}</p> <!-- Modificado -->
+            <p><strong>Producto a Entregar:</strong> ${order.recipient}</p> <!-- Modificado -->
             <p><strong>Número de Cliente:</strong> ${order.customerNumber}</p>
             <p><strong>Efectivo:</strong> ${order.cash} C$</p>
         `;
@@ -233,8 +233,8 @@
 
         const message = `Nuevo Pedido:\n` +
                         `Retiro: ${order.pickup}\n` +
-                        `¿Dónde entrego?: ${order.deliveryAddress}\n` +
-                        `¿Quién recibo?: ${order.recipient}\n` +
+                        `Lugar de Entrega: ${order.deliveryAddress}\n` + <!-- Modificado -->
+                        `Producto a Entregar: ${order.recipient}\n` + <!-- Modificado -->
                         `Número de Cliente: ${order.customerNumber}\n` +
                         `Efectivo: ${order.cash} C$`;
 

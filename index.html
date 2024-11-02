@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Registro y Facturación de Delivery</title>
+    <title>Sistema de Registro y control de Delivery</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #333; color: #fff; margin: 0; padding: 10px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: url('fondo.jpg') no-repeat center center fixed; 
+            background-size: cover; 
+            color: #fff; 
+            margin: 0; 
+            padding: 10px; 
+        }
         h1, h2 { color: #fff; text-align: center; }
         form, table, #orderTableContainer {
             width: 100%;
             max-width: 800px;
             margin: auto;
-            background-color: #444;
+            background-color: rgba(68, 68, 68, 0.8); /* Fondo semitransparente */
             border-radius: 5px;
             padding: 15px;
         }
@@ -25,7 +32,7 @@
         button { background-color: #555; color: #fff; border: none; cursor: pointer; }
         button:hover { background-color: #666; }
         .voucher {
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.9);
             color: #000;
             width: 300px; padding: 20px; border: 1px solid #000; border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); margin: auto;

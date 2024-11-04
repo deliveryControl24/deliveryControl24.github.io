@@ -52,12 +52,16 @@
 
 <form id="orderForm">
     <h2>Registrar Nuevo Pedido</h2>
-    <label>Retiro: <input type="text" id="pickup" required></label>
+    <label>Retiro: <input type="text" id="pickup"></label> <!-- Campo opcional -->
     <label>Lugar de Entrega: <input type="text" id="deliveryAddress"></label> <!-- Campo opcional -->
     <label>Producto a Entregar: <input type="text" id="recipient"></label> <!-- Campo opcional -->
     <label>Número de Cliente: <input type="text" id="customerNumber"></label> <!-- Campo opcional -->
     <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label> <!-- Campo obligatorio -->
-    <label>Nombre de Motorizado: <input type="text" id="motorizedName" required></label> <!-- Campo obligatorio -->
+    <label>Nombre de Motorizado: 
+        <select id="motorizedSelect" required>
+            <option value="">Seleccione un Motorizado</option>
+        </select>
+    </label> <!-- Campo obligatorio -->
     <button type="submit">Añadir Pedido</button>
     
     <div>
@@ -171,12 +175,12 @@
     document.getElementById('orderForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const order = {
-            pickup: this.pickup.value,
+            pickup: this.pickup.value || "No especificado", // Asignar valor por defecto si es opcional
             deliveryAddress: this.deliveryAddress.value || "No especificado", // Asignar valor por defecto si es opcional
             recipient: this.recipient.value || "No especificado", // Asignar valor por defecto si es opcional
             customerNumber: this.customerNumber.value || "No especificado", // Asignar valor por defecto si es opcional
             cash: parseFloat(this.cash.value),
-            motorizedName: this.motorizedName.value, // Captura el nombre del motorizado
+            motorizedName: document.getElementById('motorizedSelect').value, // Captura el nombre del motorizado seleccionado
         };
         orders.push(order);
         localStorage.setItem('orders', JSON.stringify(orders)); // Guardar en almacenamiento local
@@ -192,6 +196,7 @@
         if (motorizedName) {
             motorized.push(motorizedName);
             updateMotorizedList();
+            updateMotorizedSelect(); // Actualizar el select de motorizados
             document.getElementById('newMotorizedName').value = ''; // Limpiar el campo de entrada
         }
     }
@@ -209,9 +214,21 @@
         });
     }
 
+    function updateMotorizedSelect() {
+        const motorizedSelect = document.getElementById('motorizedSelect');
+        motorizedSelect.innerHTML = '<option value="">Seleccione un Motorizado</option>'; // Limpiar y establecer opción por defecto
+        motorized.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            motorizedSelect.appendChild(option);
+        });
+    }
+
     function removeMotorized(index) {
         motorized.splice(index, 1); // Eliminar el motorizado del arreglo
         updateMotorizedList(); // Actualizar la lista de motorizados
+        updateMotorizedSelect(); // Actualizar el select de motorizados
         updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
     }
 
@@ -407,6 +424,7 @@
     renderOrders(); // Cargar pedidos al inicio
     renderHistory(); // Cargar historial al inicio
     updateMotorizedCount(); // Iniciar conteo de motorizados al cargar
+    updateMotorizedSelect(); // Iniciar select de motorizados al cargar
 </script>
 
 </body>

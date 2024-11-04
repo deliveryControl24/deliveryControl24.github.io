@@ -50,6 +50,7 @@
 <h1>Sistema de Registro y Facturación de Pedidos</h1>
 <h2 id="currentDay"></h2>
 
+<!-- Formulario para registrar un nuevo pedido -->
 <form id="orderForm">
     <h2>Registrar Nuevo Pedido</h2>
     <label>Retiro: <input type="text" id="pickup" required></label> <!-- Campo obligatorio -->
@@ -57,6 +58,7 @@
     <label>Producto a Entregar: <input type="text" id="recipient"></label> <!-- Campo opcional -->
     <label>Número de Cliente: <input type="text" id="customerNumber"></label> <!-- Campo opcional -->
     <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label> <!-- Campo obligatorio -->
+    <label>Tarifa: <input type="text" id="rate"></label> <!-- Campo opcional -->
     <label>Nombre de Motorizado: 
         <select id="motorizedSelect" required>
             <option value="">Seleccione un Motorizado</option>
@@ -74,12 +76,14 @@
     </div>
 </form>
 
+<!-- Formulario para guardar un nuevo motorizado -->
 <h2>Guardar Motorizado</h2>
 <form id="motorizedForm">
     <label>Nombre de Motorizado: <input type="text" id="newMotorizedName" required></label>
     <button type="button" onclick="addMotorized()">Añadir Motorizado</button>
 </form>
 
+<!-- Tabla para mostrar los motorizados guardados -->
 <h2>Motorizados</h2>
 <div id="motorizedListContainer">
     <table>
@@ -93,6 +97,7 @@
     </table>
 </div>
 
+<!-- Seleccionar pedido para guardar como voucher -->
 <h2>Seleccionar Pedido para Guardar</h2>
 <label for="orderSelect">Selecciona el Pedido:</label>
 <select id="orderSelect"></select>
@@ -104,11 +109,13 @@
 <button onclick="exportSelectedOrderAsVoucher()">Guardar Pedido</button>
 <button onclick="sendOrderToWhatsApp()">Enviar Pedido a WhatsApp</button>
 
+<!-- Sección para mostrar ganancias del día -->
 <h2>Ganancia del Día</h2>
 <button onclick="downloadDailyEarnings()">Descargar Ganancia del Día</button>
 <button onclick="calculateTotalEarnings()">Suma de Ganancias del Día</button>
 <div id="totalEarningsDisplay">Total Ganancias: 0 C$</div>
 
+<!-- Conteo de pedidos por motorizado -->
 <h2>Conteo de Pedidos por Motorizado</h2>
 <div id="motorizedCountContainer">
     <table>
@@ -124,6 +131,7 @@
     <button onclick="downloadMotorizedCount()">Descargar Conteo de Motorizados</button> <!-- Botón para descargar conteo -->
 </div>
 
+<!-- Tabla para mostrar los pedidos registrados -->
 <div id="orderTableContainer">
     <table>
         <thead>
@@ -147,6 +155,7 @@
     </table>
 </div>
 
+<!-- Historial de pedidos -->
 <div id="historyContainer">
     <h2>Historial de Pedidos</h2>
     <table>
@@ -180,6 +189,7 @@
             recipient: this.recipient.value || "No especificado", // Asignar valor por defecto si es opcional
             customerNumber: this.customerNumber.value || "No especificado", // Asignar valor por defecto si es opcional
             cash: parseFloat(this.cash.value),
+            rate: this.rate.value || "No especificado", // Asignar valor por defecto si es opcional
             motorizedName: document.getElementById('motorizedSelect').value, // Captura el nombre del motorizado seleccionado
         };
         orders.push(order);
@@ -327,6 +337,7 @@
             <p><strong>Producto a Entregar:</strong> ${order.recipient}</p>
             <p><strong>Número de Cliente:</strong> ${order.customerNumber}</p>
             <p><strong>Efectivo:</strong> ${order.cash} C$</p>
+            <p><strong>Tarifa:</strong> ${order.rate}</p> <!-- Mostrar tarifa en el voucher -->
             <p><strong>Nombre de Motorizado:</strong> ${order.motorizedName}</p> <!-- Mostrar nombre del motorizado en el voucher -->
         `;
         
@@ -359,6 +370,7 @@
                         `Producto a Entregar: ${order.recipient}\n` +
                         `Número de Cliente: ${order.customerNumber}\n` +
                         `Efectivo: ${order.cash} C$\n` +
+                        `Tarifa: ${order.rate}\n` + // Agregar tarifa en el mensaje
                         `Nombre de Motorizado: ${order.motorizedName}`; // Agregar nombre del motorizado en el mensaje
 
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;

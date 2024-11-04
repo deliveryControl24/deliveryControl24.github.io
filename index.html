@@ -52,7 +52,7 @@
 
 <form id="orderForm">
     <h2>Registrar Nuevo Pedido</h2>
-    <label>Retiro: <input type="text" id="pickup"></label> <!-- Campo opcional -->
+    <label>Retiro: <input type="text" id="pickup" required></label> <!-- Campo obligatorio -->
     <label>Lugar de Entrega: <input type="text" id="deliveryAddress"></label> <!-- Campo opcional -->
     <label>Producto a Entregar: <input type="text" id="recipient"></label> <!-- Campo opcional -->
     <label>Número de Cliente: <input type="text" id="customerNumber"></label> <!-- Campo opcional -->
@@ -175,7 +175,7 @@
     document.getElementById('orderForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const order = {
-            pickup: this.pickup.value || "No especificado", // Asignar valor por defecto si es opcional
+            pickup: this.pickup.value, // Campo obligatorio
             deliveryAddress: this.deliveryAddress.value || "No especificado", // Asignar valor por defecto si es opcional
             recipient: this.recipient.value || "No especificado", // Asignar valor por defecto si es opcional
             customerNumber: this.customerNumber.value || "No especificado", // Asignar valor por defecto si es opcional

@@ -141,13 +141,14 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
+                <th>Tarifa</th> <!-- Nueva columna para la tarifa -->
                 <th>Nombre de Motorizado</th> <!-- Cambiado de Tarifa a Nombre de Motorizado -->
             </tr>
         </thead>
         <tbody id="orderTable"></tbody>
         <tfoot>
             <tr>
-                <td colspan="4" class="total">Total Diario de Pedidos</td>
+                <td colspan="5" class="total">Total Diario de Pedidos</td>
                 <td id="dailyTotal">0</td>
                 <td></td> <!-- Espacio para el nombre del motorizado en el pie de la tabla -->
             </tr>
@@ -166,6 +167,7 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
+                <th>Tarifa</th> <!-- Nueva columna para la tarifa -->
                 <th>Nombre de Motorizado</th> <!-- Cambiado de Tarifa a Nombre de Motorizado -->
                 <th>Acciones</th>
             </tr>
@@ -255,6 +257,7 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
+                <td>${order.rate}</td> <!-- Mostrar tarifa -->
                 <td>${order.motorizedName}</td> <!-- Mostrar el nombre del motorizado -->
             `;
             tableBody.appendChild(row);
@@ -276,6 +279,7 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
+                <td>${order.rate}</td> <!-- Mostrar tarifa -->
                 <td>${order.motorizedName}</td> <!-- Mostrar el nombre del motorizado -->
                 <td><button onclick="deleteOrder(${index})">Eliminar</button></td>
             `;

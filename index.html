@@ -6,44 +6,58 @@
     <title>Sistema de Registro y Facturación de Pedidos</title>
     <style>
         body { 
-            font-family: Arial, sans-serif; 
-            background: url('fondo.jpg') no-repeat center center fixed; 
-            background-size: cover; 
-            color: #fff; 
+            font-family: 'Roboto', sans-serif; 
+            background-color: #f5f5f5; 
             margin: 0; 
-            padding: 10px; 
+            padding: 20px; 
         }
-        h1, h2 { color: #fff; text-align: center; }
-        form, table, #orderTableContainer, #historyContainer {
-            width: 100%;
-            max-width: 800px;
+        h1, h2 { 
+            color: #333; 
+            text-align: center; 
+            margin-bottom: 10px; 
+        }
+        form, .card, table {
+            max-width: 600px;
             margin: auto;
-            background-color: rgba(68, 68, 68, 0.8); /* Fondo semitransparente */
-            border-radius: 5px;
+            background-color: #fff; 
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             padding: 15px;
+            margin-bottom: 20px;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #555; text-align: left; }
-        .total { font-weight: bold; }
-        label { color: #fff; }
-        input, select, textarea, button { 
-            color: #000; background-color: #fff; border: 1px solid #ccc; padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box;
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f0f0f0; }
+        button { 
+            background-color: #6200ea; 
+            color: #fff; 
+            border: none; 
+            padding: 10px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: background-color 0.3s; 
         }
-        button { background-color: #555; color: #fff; border: none; cursor: pointer; }
-        button:hover { background-color: #666; }
+        button:hover { background-color: #3700b3; }
+        input, select, textarea { 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            padding: 10px; 
+            width: 100%; 
+            margin: 8px 0; 
+            box-sizing: border-box; 
+        }
         .voucher {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #000;
-            width: 300px; padding: 20px; border: 1px solid #000; border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); margin: auto;
+            padding: 20px; 
+            border: 1px solid #000; 
+            border-radius: 5px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+            margin: auto; 
         }
-        .voucher h2 { text-align: center; }
-        .voucher .total { font-size: 1.2em; }
-        @media (max-width: 768px) { th, td { padding: 8px; font-size: 0.9rem; } }
-        @media (max-width: 480px) { th, td { font-size: 0.8rem; } }
+        @media (max-width: 768px) {
+            th, td { padding: 8px; font-size: 0.9rem; }
+        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -53,26 +67,23 @@
 <!-- Formulario para registrar un nuevo pedido -->
 <form id="orderForm">
     <h2>Registrar Nuevo Pedido</h2>
-    <label>Retiro: <input type="text" id="pickup" required></label> <!-- Campo obligatorio -->
-    <label>Lugar de Entrega: <input type="text" id="deliveryAddress"></label> <!-- Campo opcional -->
-    <label>Producto a Entregar: <input type="text" id="recipient"></label> <!-- Campo opcional -->
-    <label>Número de Cliente: <input type="text" id="customerNumber"></label> <!-- Campo opcional -->
-    <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label> <!-- Campo obligatorio -->
-    <label>Tarifa: <input type="text" id="rate"></label> <!-- Campo opcional -->
+    <label>Retiro: <input type="text" id="pickup" required></label>
+    <label>Lugar de Entrega: <input type="text" id="deliveryAddress"></label>
+    <label>Producto a Entregar: <input type="text" id="recipient"></label>
+    <label>Número de Cliente: <input type="text" id="customerNumber"></label>
+    <label>Efectivo (C$): <input type="number" id="cash" min="0" required></label>
+    <label>Tarifa: <input type="text" id="rate"></label>
     <label>Nombre de Motorizado: 
         <select id="motorizedSelect" required>
             <option value="">Seleccione un Motorizado</option>
         </select>
-    </label> <!-- Campo obligatorio -->
+    </label>
     <button type="submit">Añadir Pedido</button>
-    
-    <div>
-        <button type="button" onclick="toggleDeleteConfirmation()">Limpiar/Borrar</button> <!-- Cambiado a Limpiar/Borrar -->
-        <div id="deleteConfirmation" style="display:none;">
-            <p>¿Está seguro de que desea eliminar todos los pedidos?</p>
-            <button onclick="clearEarnings()">Sí</button>
-            <button onclick="toggleDeleteConfirmation()">No</button>
-        </div>
+    <button type="button" onclick="toggleDeleteConfirmation()">Limpiar/Borrar</button>
+    <div id="deleteConfirmation" style="display:none;">
+        <p>¿Está seguro de que desea eliminar todos los pedidos?</p>
+        <button onclick="clearEarnings()">Sí</button>
+        <button onclick="toggleDeleteConfirmation()">No</button>
     </div>
 </form>
 
@@ -113,9 +124,9 @@
 <h2>Ganancia del Día</h2>
 <button onclick="downloadDailyEarnings()">Descargar Ganancia del Día</button>
 <button onclick="calculateTotalEarnings()">Suma de Ganancias del Día</button>
-<button onclick="calculateTotalRates()">Suma de Tarifas</button> <!-- Botón para sumar tarifas -->
+<button onclick="calculateTotalRates()">Suma de Tarifas</button>
 <div id="totalEarningsDisplay">Total Ganancias: 0 C$</div>
-<div id="totalRatesDisplay">Total Tarifas: 0 C$</div> <!-- Muestra total de tarifas -->
+<div id="totalRatesDisplay">Total Tarifas: 0 C$</div>
 
 <!-- Conteo de pedidos por motorizado -->
 <h2>Conteo de Pedidos por Motorizado</h2>
@@ -125,12 +136,12 @@
             <tr>
                 <th>Nombre de Motorizado</th>
                 <th>Conteo de Pedidos</th>
-                <th>Total Efectivo (C$)</th> <!-- Nueva columna para el total de efectivo -->
+                <th>Total Efectivo (C$)</th>
             </tr>
         </thead>
         <tbody id="motorizedCountTable"></tbody>
     </table>
-    <button onclick="downloadMotorizedCount()">Descargar Conteo de Motorizados</button> <!-- Botón para descargar conteo -->
+    <button onclick="downloadMotorizedCount()">Descargar Conteo de Motorizados</button>
 </div>
 
 <!-- Tabla para mostrar los pedidos registrados -->
@@ -143,8 +154,8 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
-                <th>Tarifa</th> <!-- Nueva columna para la tarifa -->
-                <th>Nombre de Motorizado</th> <!-- Cambiado de Tarifa a Nombre de Motorizado -->
+                <th>Tarifa</th>
+                <th>Nombre de Motorizado</th>
             </tr>
         </thead>
         <tbody id="orderTable"></tbody>
@@ -152,7 +163,7 @@
             <tr>
                 <td colspan="5" class="total">Total Diario de Pedidos</td>
                 <td id="dailyTotal">0</td>
-                <td></td> <!-- Espacio para el nombre del motorizado en el pie de la tabla -->
+                <td></td>
             </tr>
         </tfoot>
     </table>
@@ -169,8 +180,8 @@
                 <th>Producto a Entregar</th>
                 <th>Número de Cliente</th>
                 <th>Efectivo (C$)</th>
-                <th>Tarifa</th> <!-- Nueva columna para la tarifa -->
-                <th>Nombre de Motorizado</th> <!-- Cambiado de Tarifa a Nombre de Motorizado -->
+                <th>Tarifa</th>
+                <th>Nombre de Motorizado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -179,30 +190,29 @@
 </div>
 
 <script>
-    const orders = JSON.parse(localStorage.getItem('orders')) || []; // Cargar pedidos del almacenamiento local
-    const motorized = []; // Arreglo para almacenar motorizados
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const motorized = [];
 
-    // Mostrar el día de la semana
     document.getElementById('currentDay').textContent = `Día: ${new Date().toLocaleString('es-ES', { weekday: 'long' })}`;
 
     document.getElementById('orderForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const order = {
-            pickup: this.pickup.value, // Campo obligatorio
-            deliveryAddress: this.deliveryAddress.value || "No especificado", // Asignar valor por defecto si es opcional
-            recipient: this.recipient.value || "No especificado", // Asignar valor por defecto si es opcional
-            customerNumber: this.customerNumber.value || "No especificado", // Asignar valor por defecto si es opcional
+            pickup: this.pickup.value,
+            deliveryAddress: this.deliveryAddress.value || "No especificado",
+            recipient: this.recipient.value || "No especificado",
+            customerNumber: this.customerNumber.value || "No especificado",
             cash: parseFloat(this.cash.value),
-            rate: this.rate.value || "No especificado", // Asignar valor por defecto si es opcional
-            motorizedName: document.getElementById('motorizedSelect').value, // Captura el nombre del motorizado seleccionado
+            rate: this.rate.value || "No especificado",
+            motorizedName: document.getElementById('motorizedSelect').value,
         };
         orders.push(order);
-        localStorage.setItem('orders', JSON.stringify(orders)); // Guardar en almacenamiento local
+        localStorage.setItem('orders', JSON.stringify(orders));
         this.reset();
         renderOrders();
         renderHistory();
         updateOrderSelect();
-        updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
+        updateMotorizedCount();
     });
 
     function addMotorized() {
@@ -210,14 +220,14 @@
         if (motorizedName) {
             motorized.push(motorizedName);
             updateMotorizedList();
-            updateMotorizedSelect(); // Actualizar el select de motorizados
-            document.getElementById('newMotorizedName').value = ''; // Limpiar el campo de entrada
+            updateMotorizedSelect();
+            document.getElementById('newMotorizedName').value = '';
         }
     }
 
     function updateMotorizedList() {
         const motorizedListBody = document.getElementById('motorizedList');
-        motorizedListBody.innerHTML = ''; // Limpiar la lista
+        motorizedListBody.innerHTML = '';
         motorized.forEach((name, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -230,7 +240,7 @@
 
     function updateMotorizedSelect() {
         const motorizedSelect = document.getElementById('motorizedSelect');
-        motorizedSelect.innerHTML = '<option value="">Seleccione un Motorizado</option>'; // Limpiar y establecer opción por defecto
+        motorizedSelect.innerHTML = '<option value="">Seleccione un Motorizado</option>';
         motorized.forEach(name => {
             const option = document.createElement('option');
             option.value = name;
@@ -240,10 +250,10 @@
     }
 
     function removeMotorized(index) {
-        motorized.splice(index, 1); // Eliminar el motorizado del arreglo
-        updateMotorizedList(); // Actualizar la lista de motorizados
-        updateMotorizedSelect(); // Actualizar el select de motorizados
-        updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
+        motorized.splice(index, 1);
+        updateMotorizedList();
+        updateMotorizedSelect();
+        updateMotorizedCount();
     }
 
     function renderOrders() {
@@ -259,11 +269,11 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
-                <td>${order.rate}</td> <!-- Mostrar tarifa -->
-                <td>${order.motorizedName}</td> <!-- Mostrar el nombre del motorizado -->
+                <td>${order.rate}</td>
+                <td>${order.motorizedName}</td>
             `;
             tableBody.appendChild(row);
-            dailyTotal += order.cash; // Sumar el efectivo total
+            dailyTotal += order.cash;
         });
 
         document.getElementById('dailyTotal').textContent = dailyTotal + ' C$';
@@ -281,8 +291,8 @@
                 <td>${order.recipient}</td>
                 <td>${order.customerNumber}</td>
                 <td>${order.cash} C$</td>
-                <td>${order.rate}</td> <!-- Mostrar tarifa -->
-                <td>${order.motorizedName}</td> <!-- Mostrar el nombre del motorizado -->
+                <td>${order.rate}</td>
+                <td>${order.motorizedName}</td>
                 <td><button onclick="deleteOrder(${index})">Eliminar</button></td>
             `;
             historyTableBody.appendChild(row);
@@ -294,30 +304,29 @@
         orders.forEach(order => {
             if (motorizedCount[order.motorizedName]) {
                 motorizedCount[order.motorizedName].count++;
-                motorizedCount[order.motorizedName].total += order.cash; // Sumar efectivo
+                motorizedCount[order.motorizedName].total += order.cash;
             } else {
-                motorizedCount[order.motorizedName] = { count: 1, total: order.cash }; // Inicializar conteo y efectivo
+                motorizedCount[order.motorizedName] = { count: 1, total: order.cash };
             }
         });
 
         const motorizedCountTableBody = document.getElementById('motorizedCountTable');
-        motorizedCountTableBody.innerHTML = ''; // Limpiar tabla de conteo
+        motorizedCountTableBody.innerHTML = '';
 
         for (const [name, data] of Object.entries(motorizedCount)) {
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${name}</td><td>${data.count}</td><td>${data.total} C$</td>`; // Añadir total de efectivo
+            row.innerHTML = `<td>${name}</td><td>${data.count}</td><td>${data.total} C$</td>`;
             motorizedCountTableBody.appendChild(row);
         }
     }
 
     function deleteOrder(index) {
-        // Eliminar el pedido del arreglo
         orders.splice(index, 1);
-        localStorage.setItem('orders', JSON.stringify(orders)); // Actualizar almacenamiento local
-        renderOrders(); // Volver a renderizar la tabla de pedidos
-        renderHistory(); // Volver a renderizar el historial
-        updateOrderSelect(); // Actualizar el selector de pedidos
-        updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
+        localStorage.setItem('orders', JSON.stringify(orders));
+        renderOrders();
+        renderHistory();
+        updateOrderSelect();
+        updateMotorizedCount();
     }
 
     function updateOrderSelect() {
@@ -343,8 +352,8 @@
             <p><strong>Producto a Entregar:</strong> ${order.recipient}</p>
             <p><strong>Número de Cliente:</strong> ${order.customerNumber}</p>
             <p><strong>Efectivo:</strong> ${order.cash} C$</p>
-            <p><strong>Tarifa:</strong> ${order.rate}</p> <!-- Mostrar tarifa en el voucher -->
-            <p><strong>Nombre de Motorizado:</strong> ${order.motorizedName}</p> <!-- Mostrar nombre del motorizado en el voucher -->
+            <p><strong>Tarifa:</strong> ${order.rate}</p>
+            <p><strong>Nombre de Motorizado:</strong> ${order.motorizedName}</p>
         `;
         
         document.body.appendChild(voucherContainer);
@@ -376,8 +385,8 @@
                         `Producto a Entregar: ${order.recipient}\n` +
                         `Número de Cliente: ${order.customerNumber}\n` +
                         `Efectivo: ${order.cash} C$\n` +
-                        `Tarifa: ${order.rate}\n` + // Agregar tarifa en el mensaje
-                        `Nombre de Motorizado: ${order.motorizedName}`; // Agregar nombre del motorizado en el mensaje
+                        `Tarifa: ${order.rate}\n` +
+                        `Nombre de Motorizado: ${order.motorizedName}`;
 
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
@@ -410,13 +419,13 @@
 
     function clearEarnings() {
         if (confirm("¿Está seguro de que desea eliminar todos los pedidos?")) {
-            localStorage.removeItem('orders'); // Limpiar el almacenamiento local
-            orders.length = 0; // Vaciar el arreglo de pedidos
-            renderOrders(); // Volver a renderizar la tabla de pedidos
-            renderHistory(); // Volver a renderizar el historial
-            updateOrderSelect(); // Actualizar el selector de pedidos
-            document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: 0 C$`; // Resetear el total
-            updateMotorizedCount(); // Actualizar conteo de pedidos por motorizado
+            localStorage.removeItem('orders');
+            orders.length = 0;
+            renderOrders();
+            renderHistory();
+            updateOrderSelect();
+            document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: 0 C$`;
+            updateMotorizedCount();
         }
     }
 
@@ -425,16 +434,15 @@
         orders.forEach(order => {
             if (motorizedCount[order.motorizedName]) {
                 motorizedCount[order.motorizedName].count++;
-                motorizedCount[order.motorizedName].total += order.cash; // Sumar efectivo
+                motorizedCount[order.motorizedName].total += order.cash;
             } else {
-                motorizedCount[order.motorizedName] = { count: 1, total: order.cash }; // Inicializar conteo y efectivo
+                motorizedCount[order.motorizedName] = { count: 1, total: order.cash };
             }
         });
 
-        // Crear contenido para la descarga
         let countText = "Nombre de Motorizado,Conteo de Pedidos,Total Efectivo (C$)\n";
         for (const [name, data] of Object.entries(motorizedCount)) {
-            countText += `${name},${data.count},${data.total}\n`; // Añadir total de efectivo
+            countText += `${name},${data.count},${data.total}\n`;
         }
 
         const blob = new Blob([countText], { type: 'text/csv' });
@@ -444,10 +452,10 @@
         link.click();
     }
 
-    renderOrders(); // Cargar pedidos al inicio
-    renderHistory(); // Cargar historial al inicio
-    updateMotorizedCount(); // Iniciar conteo de motorizados al cargar
-    updateMotorizedSelect(); // Iniciar select de motorizados al cargar
+    renderOrders();
+    renderHistory();
+    updateMotorizedCount();
+    updateMotorizedSelect();
 </script>
 
 </body>

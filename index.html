@@ -55,8 +55,19 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
             margin: auto; 
         }
+
+        /* Media Queries */
         @media (max-width: 768px) {
-            th, td { padding: 8px; font-size: 0.9rem; }
+            h1, h2 { font-size: 1.5rem; }
+            button, input, select, textarea { padding: 8px; }
+            th, td { font-size: 0.9rem; padding: 8px; }
+        }
+
+        @media (max-width: 480px) {
+            h1, h2 { font-size: 1.2rem; }
+            button, input, select, textarea { padding: 6px; font-size: 0.9rem; }
+            th, td { font-size: 0.8rem; padding: 6px; }
+            form, .card, table { width: 95%; } /* Aumentar el ancho para móviles */
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

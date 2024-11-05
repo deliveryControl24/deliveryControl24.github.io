@@ -113,7 +113,9 @@
 <h2>Ganancia del Día</h2>
 <button onclick="downloadDailyEarnings()">Descargar Ganancia del Día</button>
 <button onclick="calculateTotalEarnings()">Suma de Ganancias del Día</button>
+<button onclick="calculateTotalRates()">Suma de Tarifas</button> <!-- Botón para sumar tarifas -->
 <div id="totalEarningsDisplay">Total Ganancias: 0 C$</div>
+<div id="totalRatesDisplay">Total Tarifas: 0 C$</div> <!-- Muestra total de tarifas -->
 
 <!-- Conteo de pedidos por motorizado -->
 <h2>Conteo de Pedidos por Motorizado</h2>
@@ -394,6 +396,11 @@
     function calculateTotalEarnings() {
         const totalEarnings = orders.reduce((total, order) => total + order.cash, 0);
         document.getElementById('totalEarningsDisplay').textContent = `Total Ganancias: ${totalEarnings} C$`;
+    }
+
+    function calculateTotalRates() {
+        const totalRates = orders.reduce((total, order) => total + (parseFloat(order.rate) || 0), 0);
+        document.getElementById('totalRatesDisplay').textContent = `Total Tarifas: ${totalRates} C$`;
     }
 
     function toggleDeleteConfirmation() {
